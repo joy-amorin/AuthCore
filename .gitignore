@@ -42,3 +42,6 @@ build/
 
 # PDF y documentación compilada
 docs/*.pdf
+
+# scripts de prueba
+scripts/
