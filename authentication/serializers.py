@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from .models import Role, RolePermission, Permission, UserRole
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -22,3 +23,23 @@ class LoginSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+
+class RoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ('id', 'name', 'description')
+
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Permission
+        fields = ('id', 'code', 'description')
+
+class UserRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserRole
+        fields = ('id', 'user', 'role')
+
+class RolePermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RolePermission
+        fields = ('id', 'role', 'permission')
