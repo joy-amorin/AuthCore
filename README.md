@@ -25,7 +25,9 @@ AuthCore is a Django REST Framework project providing a fully-featured authentic
 
 ---
 
-## Project Structure
+<details>
+  <summary>Project Structure</summary>
+
 - authcore/
   - authcore/
     - settings.py
@@ -44,7 +46,7 @@ AuthCore is a Django REST Framework project providing a fully-featured authentic
   - frontend/
   - docs/
 
-
+</details>
 
 ---
 
