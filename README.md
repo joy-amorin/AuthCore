@@ -26,23 +26,24 @@ AuthCore is a Django REST Framework project providing a fully-featured authentic
 ---
 
 ## Project Structure
-authcore/
-├─ authcore/
-│ ├─ settings.py
-│ ├─ urls.py
-├─ users/
-│ ├─ models.py
-│ ├─ serializers.py
-│ ├─ views.py
-│ └─ urls.py
-├─ authentication/
-│ ├─ serializers.py
-│ ├─ views.py
-│ └─ urls.py
-├─ audit/
-│ └─ (future auditing features)
-├─ frontend/
-└─ docs/
+- authcore/
+  - authcore/
+    - settings.py
+    - urls.py
+  - users/
+    - models.py
+    - serializers.py
+    - views.py
+    - urls.py
+  - authentication/
+    - serializers.py
+    - views.py
+    - urls.py
+  - audit/
+    - (future auditing features)
+  - frontend/
+  - docs/
+
 
 
 ---
