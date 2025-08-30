@@ -55,14 +55,16 @@ authcore/
    pip install -r requirements.txt
 4. Configure your database in settings.py
 5. Run migrations:
-
+    ```bash
 python manage.py migrate
 
 6. Create superuser:
+   ```bash
 
 python manage.py createsuperuser
 
 7. Start the development server:
+   ```bash
 
 python manage.py runserver
 
