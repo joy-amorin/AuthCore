@@ -11,9 +11,8 @@ venv/
 env/
 ENV/
 .venv/
-migrations/
 
-# Django stuff:
+# Django general
 *.log
 *.pot
 *.pyc
@@ -22,10 +21,10 @@ db.sqlite3
 media/
 staticfiles/
 
-# If using migrations:
+# Migrations: ignora solo archivos compilados, NO las migrations .py
+*/migrations/__pycache__/
 */migrations/*.pyc
 */migrations/*.py[cod]
-*/migrations/__pycache__/
 
 # VSCode settings
 .vscode/
