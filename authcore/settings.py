@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'users',
     'authentication',
     'audit',
+    'rbac',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
 
@@ -96,9 +97,13 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {
+            'min_length': 8,
+        }
     },
     {
         'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
@@ -109,7 +114,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es'
 
 TIME_ZONE = 'UTC'
 
@@ -136,7 +141,7 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'users.User'
 
 SIMPLE_JWT = {
-    "ACCES_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ACCES_TOKEN_LIFETIME": timedelta(minutes=10),
     "REFRESH_TOKEN_LIFETIME":timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION":True,
