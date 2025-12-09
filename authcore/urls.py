@@ -20,9 +20,12 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # users route
-    path('api/', include('users.urls')),
+   # register, login, logout endpoints 
+    path('api/', include('users.urls')), 
 
     # uthentication routes
-    path('api/', include('authentication.urls'))
+    path('api/', include('authentication.urls')),
+
+    # roles and permissions endpoints
+    path('api/', include('rbac.urls'),)
 ]
