@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rbac',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
+    'drf_yasg',
 
 ]
 
@@ -141,10 +142,20 @@ REST_FRAMEWORK = {
 AUTH_USER_MODEL = 'users.User'
 
 SIMPLE_JWT = {
-    "ACCES_TOKEN_LIFETIME": timedelta(minutes=10),
+    "ACCES_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME":timedelta(days=1),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION":True,
 
     "AUTH_HEADERS_TYPES": ("Bearer",),
+}
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    }
 }
