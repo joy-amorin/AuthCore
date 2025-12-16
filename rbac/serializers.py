@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import Role, Permission, UserRole, RolePermission
 
+
 from django.contrib.auth import get_user_model
 
 User = get_user_model
@@ -11,11 +12,19 @@ class PermissionSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'description']
 
 class RoleSerializer(serializers.ModelSerializer):
-    Permissions = PermissionSerializer(many=True, read_only=True)
 
     class Meta:
         model = Role
         fields = ['id', 'name', 'description', 'permissions']
+        extra_kwargs = {
+            'name': {'label': 'name'},
+            'description': {'label': 'description'},
+        }
+class RoleListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Role
+        fields = ['id', 'name','description'] 
+
 
 class UserRoleSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,5 +36,8 @@ class RolePermissionSerializer(serializers.ModelSerializer):
         model = RolePermission
         fields = ['id', 'role', 'permission']
 
-
-
+class AssignPermissionsSerializer(serializers.Serializer):
+    permissions = serializers.ListField(
+        child=serializers.UUIDField(),
+        allow_empty=False
+    )
