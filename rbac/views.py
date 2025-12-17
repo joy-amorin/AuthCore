@@ -7,6 +7,11 @@ from rest_framework import viewsets, permissions
 from .models import Permission, Role, RolePermission
 from .serializers import PermissionSerializer, RoleSerializer
 from .serializers import AssignPermissionsSerializer, RoleListSerializer
+from .serializers import UserRoleSerializer, AssignRolesSerializer
+from users.models import User
+from users.serializers import UserSerializer
+from .models import UserRole
+
 
 # only admins can manage permissions
 class PermissionViewSet(viewsets.ModelViewSet): # create automatically  GET, POST, PUT, DELETE with Model Viewset
@@ -24,7 +29,7 @@ class RoleViewSet(viewsets.ModelViewSet):
             return RoleListSerializer
         return super().get_serializer_class()
 
-    # POST /api/roles/{id}/permissions/
+    # POST GET /api/roles/{id}/permissions/
     @action(detail=True, methods=['GET', 'POST'],
              url_path='permissions',
              serializer_class=AssignPermissionsSerializer)
@@ -53,3 +58,10 @@ class RoleViewSet(viewsets.ModelViewSet):
         permissions = role.permissions.all()
         serializer = PermissionSerializer(permissions, many=True)
         return Response(serializer.data)
+    
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_class = [permissions.IsAdminUser]
+
+   

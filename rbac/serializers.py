@@ -41,3 +41,8 @@ class AssignPermissionsSerializer(serializers.Serializer):
         child=serializers.UUIDField(),
         allow_empty=False
     )
+class AssignRolesSerializer(serializers.Serializer):
+    roles = serializers.ListField(
+        child=serializers.UUIDField(),
+        allow_empty=False
+    )
