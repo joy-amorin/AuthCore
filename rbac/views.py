@@ -65,3 +65,37 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_class = [permissions.IsAdminUser]
 
    
+class UserRoleViewset(viewsets.ModelViewSet):
+    queryset = UserRole.objects.all()
+    serializer_class = UserRoleSerializer
+    Permission_classes = [permissions.IsAdminUser]
+
+    def create(self, request, *args,**kwargs):
+        """
+        POST /user-roles
+        assign a rol to a user
+        """
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raice_exception=True)
+
+        user = get_object_or_404(User, id=serializer.validated_data['user'].id)
+        role = get_object_or_404(Role, id=serializer.validated_data['rol'].id)
+
+        # avoid duplicates
+        user_role, created = UserRole.objects.get_or_create(user=user, role=role)
+
+        if created:
+            return Response({ "detail": "Rol asignado correctamente"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({ "detail": "La asignación ya existe"}, status=status.HTTP_200_OK)
+        
+    def destroy(self, request, *args, **kwargs):
+        """
+        DELETE /user-role/{id}
+        remove a role assignment from a user
+        """
+
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({"detail": "Rol removido correctamente"}, status=status.HTTP_200_OK)
