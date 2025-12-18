@@ -5,7 +5,7 @@ from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions
 from .models import Permission, Role, RolePermission
-from .serializers import PermissionSerializer, RoleSerializer
+from .serializers import PermissionSerializer, RoleSerializer, RoleListSerializer
 from .serializers import AssignPermissionsSerializer, RoleListSerializer
 from .serializers import UserRoleSerializer, AssignRolesSerializer
 from users.models import User
@@ -64,6 +64,16 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_class = [permissions.IsAdminUser]
 
+    @action(detail=True, methods=['GET'], url_path='roles')
+    def roles(self, request, pk=None):
+        """
+        GET /user/{id}/role
+        returns the roles associated with a user
+        """
+        user = self.get_object()
+        roles = Role.objects.filter(role_assignments__user=user)
+        serializer = RoleListSerializer(roles, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
    
 class UserRoleViewset(viewsets.ModelViewSet):
     queryset = UserRole.objects.all()
@@ -75,12 +85,11 @@ class UserRoleViewset(viewsets.ModelViewSet):
         POST /user-roles
         assign a rol to a user
         """
-
         serializer = self.get_serializer(data=request.data)
-        serializer.is_valid(raice_exception=True)
+        serializer.is_valid(raise_exception=True)
 
         user = get_object_or_404(User, id=serializer.validated_data['user'].id)
-        role = get_object_or_404(Role, id=serializer.validated_data['rol'].id)
+        role = get_object_or_404(Role, id=serializer.validated_data['role'].id)
 
         # avoid duplicates
         user_role, created = UserRole.objects.get_or_create(user=user, role=role)

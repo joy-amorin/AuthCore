@@ -56,7 +56,7 @@ class UserRole(models.Model):
     role = models.ForeignKey(
         Role,
         on_delete=models.CASCADE,
-        related_name="role",
+        related_name="role_assignments",
     )
     class Meta:
         unique_together = ("user", "role")
