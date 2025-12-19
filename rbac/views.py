@@ -62,12 +62,12 @@ class RoleViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_class = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser]
 
     @action(detail=True, methods=['GET'], url_path='roles')
     def roles(self, request, pk=None):
         """
-        GET /user/{id}/role
+        GET /users/{id}/roles
         returns the roles associated with a user
         """
         user = self.get_object()
