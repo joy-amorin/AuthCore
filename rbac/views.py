@@ -7,10 +7,11 @@ from rest_framework import viewsets, permissions
 from .models import Permission, Role, RolePermission
 from .serializers import PermissionSerializer, RoleSerializer, RoleListSerializer
 from .serializers import AssignPermissionsSerializer, RoleListSerializer
-from .serializers import UserRoleSerializer, AssignRolesSerializer
+from .serializers import UserRoleSerializer
 from users.models import User
 from users.serializers import UserSerializer
 from .models import UserRole
+from rbac.permissions import CanViewUser, CanViewRole
 
 
 # only admins can manage permissions
@@ -22,7 +23,7 @@ class PermissionViewSet(viewsets.ModelViewSet): # create automatically  GET, POS
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated, CanViewRole]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -62,7 +63,7 @@ class RoleViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAuthenticated,CanViewUser]
 
     @action(detail=True, methods=['GET'], url_path='roles')
     def roles(self, request, pk=None):
