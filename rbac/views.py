@@ -11,19 +11,19 @@ from .serializers import UserRoleSerializer
 from users.models import User
 from users.serializers import UserSerializer
 from .models import UserRole
-from rbac.permissions import CanViewUser, CanViewRole
+from .permissions import UserPermission, RolePermission, PermissionPermission
 
 
-# only admins can manage permissions
+
 class PermissionViewSet(viewsets.ModelViewSet): # create automatically  GET, POST, PUT, DELETE with Model Viewset
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
-    permission_classes = [permissions.IsAdminUser]
+    permission_classes = [PermissionPermission]
 
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
-    permission_classes = [permissions.IsAuthenticated, CanViewRole]
+    permission_classes = [RolePermission]
 
     def get_serializer_class(self):
         if self.action == 'list':
@@ -63,7 +63,7 @@ class RoleViewSet(viewsets.ModelViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated,CanViewUser]
+    permission_classes = [UserPermission]
 
     @action(detail=True, methods=['GET'], url_path='roles')
     def roles(self, request, pk=None):
