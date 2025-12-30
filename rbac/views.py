@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, permissions
-from .models import Permission, Role, RolePermission
+from .models import Permission, Role, RolePermission as RolePermissionModel
 from .serializers import PermissionSerializer, RoleSerializer, RoleListSerializer
 from .serializers import AssignPermissionsSerializer, RoleListSerializer
 from .serializers import UserRoleSerializer
@@ -30,14 +30,19 @@ class RoleViewSet(viewsets.ModelViewSet):
             return RoleListSerializer
         return super().get_serializer_class()
 
-    # POST GET /api/roles/{id}/permissions/
+    #-------------------------------
+    # Assign permissions to role
+    #-------------------------------
     @action(detail=True, methods=['GET', 'POST'],
              url_path='permissions',
              serializer_class=AssignPermissionsSerializer)
     
     def assign_permissions(self, request, pk=None):
         role = self.get_object()
-
+        
+    #-------------------------------
+    # POST: assign permissions to role
+    #-------------------------------
         if request.method == 'POST':
 
             serializer = self.get_serializer(data=request.data)
@@ -46,7 +51,7 @@ class RoleViewSet(viewsets.ModelViewSet):
 
             for perm_id in permissions_ids:
                 permission = get_object_or_404(Permission, id=perm_id)
-                RolePermission.objects.get_or_create(
+                RolePermissionModel.objects.get_or_create(
                     role=role,
                     permission=permission
                 )
@@ -55,11 +60,40 @@ class RoleViewSet(viewsets.ModelViewSet):
                 {"detail": "Permisos asignados correctamente"},
                 status=status.HTTP_200_OK
             )
-        # GET 
+    #-------------------------------
+    # GET: list permissions
+    # -------------------------------
         permissions = role.permissions.all()
         serializer = PermissionSerializer(permissions, many=True)
-        return Response(serializer.data)
-    
+        return Response(serializer.data, status=status.HTTP_200_OK) 
+        
+    #-------------------------------
+    # Delete permissions from role
+    #-------------------------------
+    @action(detail=True, methods=['POST'],
+        url_path='permissions/delete',
+        serializer_class=AssignPermissionsSerializer
+        )
+    def delete_permissions(self, request, pk=None):
+        role = self.get_object()
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        permissions_ids = serializer.validated_data['permissions']
+
+        RolePermissionModel.objects.filter(
+            role=role,
+            permission__id__in=permissions_ids
+        ).delete()
+
+        role.refresh_from_db()
+
+        return Response(
+            {"detail": "Permisos removidos correctamente",
+             "permissions": [p.name for p in role.permissions.all()]},
+            status=status.HTTP_200_OK
+        )
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
