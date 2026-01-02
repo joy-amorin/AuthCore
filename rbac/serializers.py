@@ -39,8 +39,20 @@ class RolePermissionSerializer(serializers.ModelSerializer):
 class AssignPermissionsSerializer(serializers.Serializer):
     permissions = serializers.ListField(
         child=serializers.UUIDField(),
-        allow_empty=False
+        allow_empty=True
     )
+
+    def validate_permissions(self, value):
+        """
+        check that all permissions exist in the database
+        """
+        existing_ids = set(Permission.objects.filter(id__in=value).values_list('id', flat=True))
+        invalid_ids = [str(v) for v in value if v not in existing_ids]
+        if invalid_ids:
+            raise serializers.ValidationError(
+                f"Permisos no existentes: {', '.join(invalid_ids)}"
+            )
+        return value
 class AssignRolesSerializer(serializers.Serializer):
     roles = serializers.ListField(
         child=serializers.UUIDField(),

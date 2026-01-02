@@ -87,6 +87,11 @@ class RoleViewSet(viewsets.ModelViewSet):
                 {"detail": "Uno o más permisos no existen"},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        #validate empty list
+        if not permissions_ids:
+            return Response(
+                {"detail": "No se enviaron permisos para eliminar"},
+                status=status.HTTP_200_OK)
 
         RolePermissionModel.objects.filter(
             role=role,
