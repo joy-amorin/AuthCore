@@ -80,13 +80,18 @@ class RoleViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         permissions_ids = serializer.validated_data['permissions']
+        permission_qs = Permission.objects.filter(id__in=permissions_ids)
+
+        if permission_qs.count() != len(permissions_ids):
+            return Response(
+                {"detail": "Uno o más permisos no existen"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         RolePermissionModel.objects.filter(
             role=role,
             permission__id__in=permissions_ids
         ).delete()
-
-        role.refresh_from_db()
 
         return Response(
             {"detail": "Permisos removidos correctamente",
