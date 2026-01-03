@@ -40,12 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'users',
     'authentication',
-    'audit',
     'rbac',
     'rest_framework',
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'django_extensions',
+    'audit.apps.AuditConfig',
 
 ]
 

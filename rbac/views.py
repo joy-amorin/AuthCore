@@ -20,6 +20,20 @@ class PermissionViewSet(viewsets.ModelViewSet): # create automatically  GET, POS
     serializer_class = PermissionSerializer
     permission_classes = [PermissionPermission]
 
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        instance._current_user = self.request.user
+        instance.save()
+    
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        instance._current_user = self.request.user
+        instance.save()
+
+    def perform_destroy(self, instance):
+        instance._current_user = self.request.user
+        instance.delete()
+
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
@@ -29,6 +43,20 @@ class RoleViewSet(viewsets.ModelViewSet):
         if self.action == 'list':
             return RoleListSerializer
         return super().get_serializer_class()
+    
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        instance._current_user = self.request.user
+        instance.save()
+
+    def perform_update(self, serializer):
+        instance = serializer.save()
+        instance._current_user = self.request.user
+        instance.save()
+
+    def perform_destroy(self, instance):
+        instance._current_user = self.request.user
+        instance.delete()
 
     #-------------------------------
     # Assign permissions to role
