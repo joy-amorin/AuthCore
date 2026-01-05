@@ -21,6 +21,7 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework.routers import DefaultRouter
 from rbac.views import RoleViewSet
+from audit.views import AuditLogViewSet
 
 router = DefaultRouter()
 router.register(r'roles', RoleViewSet)
@@ -51,6 +52,9 @@ urlpatterns = [
 
     # roles and permissions endpoints
     path('api/', include('rbac.urls')),
+
+    # audit log endpoints
+    path('api/', include('audit.urls')),
 
 
     # Swagger and Redoc

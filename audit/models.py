@@ -21,7 +21,7 @@ class AuditLog(models.Model):
     object_id = models.CharField(max_length=36) # UUID or register id
     action = models.CharField(max_length=10, choices=ACTION_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
-    changes = models.JSONField(null=True, blank=True) # Store changes as JSON
+    changes = models.JSONField(default=dict, blank=True) # Store changes as JSON
 
     def __str__(self):
-        return f"{self.user} {self.acttion} {self.model_name} {self.object_id}"
+        return f"{self.user} {self.action} {self.model_name} {self.object_id}"
