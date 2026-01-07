@@ -1,12 +1,22 @@
-import client from '../api/client';
+const API_URL = "http://localhost:8000";
 
-export const login = async (username: string, password: string) => {
-  const response = await client.post('/auth/login/', { username, password });
-  const token = response.data.token;
-  localStorage.setItem('token', token);
-  return token;
-};
+interface LoginResponse {
+  access: string;
+  refresh: string;
+}
 
-export const logout = () => {
-  localStorage.removeItem('token');
-};
+export async function login(email: string, password: string): Promise<LoginResponse> {
+  const response = await fetch(`${API_URL}/api/login/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Login failed");
+  }
+
+  return response.json();
+}

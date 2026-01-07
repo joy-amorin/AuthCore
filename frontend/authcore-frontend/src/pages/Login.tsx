@@ -1,30 +1,39 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../auth/authService';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  try {
+    const { access, refresh } = await login(email, password);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const token = await login(username, password);
-      console.log('Token:', token);
-      alert('Login exitoso!');
-    } catch (err) {
-      alert('Error de login');
-      console.error(err);
-    }
-  };
+    // save tokens in localStorage
+    localStorage.setItem("access_token", access);
+    localStorage.setItem("refresh_token", refresh);
+
+    console.log("Access token:", access);
+    console.log("Refresh token:", refresh);
+
+    navigate('/home');
+  } catch (err) {
+    alert("Error de login");
+    console.error(err);
+  }
+};
+
 
   return (
     <div>
       <h1>Login</h1>
       <form onSubmit={handleSubmit}>
         <input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
         <input
           type="password"
