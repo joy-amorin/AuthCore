@@ -1,29 +1,65 @@
 
 const API_URL = "http://localhost:8000";
 
-interface RequestOptions extends RequestInit {
-  body?: any;
-}
+const getTokens = () => ({
+  access: localStorage.getItem("access_token"),
+  refresh: localStorage.getItem("refresh_token"),
+});
 
-export async function apiFetch(endpoint: string, options: RequestOptions = {}) {
-  const accessToken = localStorage.getItem("access_token");
+const setTokens = (access: string, refresh: string) => {
+  localStorage.setItem("access_token", access);
+  localStorage.setItem("refresh_token", refresh);
+};
 
-  const headers: HeadersInit = {
+const refreshToken = async () => {
+  const { refresh } = getTokens();
+  if (!refresh) throw new Error("No refresh token available");
+
+  const res = await fetch(`${API_URL}/api/token/refresh/`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refresh }),
+  });
+
+  if (!res.ok) throw new Error("Failed to refresh token");
+
+  const data = await res.json();
+  setTokens(data.access, data.refresh || refresh);
+  return data.access;
+};
+
+export const apiFetch = async (url: string, options: RequestInit = {}) => {
+  const token = localStorage.getItem("access_token");
+
+  const headers: any = {
     "Content-Type": "application/json",
-    ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
     ...options.headers,
   };
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers,
-    body: options.body ? JSON.stringify(options.body) : undefined,
-  });
-
-  if (!response.ok) {
-    // handle 401 to refresh token later
-    throw new Error(`HTTP error! status: ${response.status}`);
+  
+  if (token && !url.includes("/login") && !url.includes("/register")) {
+    headers["Authorization"] = `Bearer ${token}`;
   }
 
-  return response.json();
-}
+  let res = await fetch(`${API_URL}${url}`, { ...options, headers });
+
+  if (res.status === 401 && !url.includes("/login") && !url.includes("/register")) {
+    try {
+      const newAccess = await refreshToken();
+      headers["Authorization"] = `Bearer ${newAccess}`;
+      res = await fetch(`${API_URL}${url}`, { ...options, headers });
+    } catch (err) {
+      // Refresh failed, clear tokens
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      throw err;
+    }
+  }
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`HTTP error! status: ${res.status}, ${text}`);
+  }
+
+  return res.json();
+};
