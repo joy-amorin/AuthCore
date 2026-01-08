@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import { useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -13,7 +12,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/home");
+      navigate("/panel/home");
     } catch (err) {
       alert("Error de login");
       console.error(err);

@@ -1,17 +1,26 @@
-// src/auth/AuthContext.tsx
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { apiFetch } from "../api/client";
 
-interface AuthContextProps {
-  user: any | null;
+export interface User {
+  id: string;
+  email: string;
+  first_name: string;
+  last_name: string;
+  roles: string[];
+  is_superuser: boolean;
+}
+
+
+export interface AuthContextProps {
+  user: User | null;
   authenticated: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
-const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
+export const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any | null>(null);
