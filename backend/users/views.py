@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, MeSerializer
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 
@@ -25,11 +25,6 @@ class Meview(APIView):
     permission_classes = [IsAuthenticated] # only authenticated users may acces
 
     def get(self, request):
-        user = request.user # DRF already automatically obtains the user from the JWT
-        return Response ({
-            'id': str(user.id),
-            'email': user.email,
-            'first_name': user.first_name,
-            'last_name': user.last_name
-        })
+        serializer = MeSerializer(request.user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 

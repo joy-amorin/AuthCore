@@ -26,3 +26,17 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'date_joined']
         read_only_fields = ['id', 'is_staff', 'date_joined']
+
+class MeSerializer(serializers.ModelSerializer):
+    roles = serializers.SerializerMethodField()
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'first_name', 'last_name', 'roles', 'is_superuser']
+        read_only_fields = fields
+    
+    def get_roles(self, obj):
+        return list(
+            obj.user_roles
+                .select_related('role')
+                .values_list('role__name', flat=True)
+        )
