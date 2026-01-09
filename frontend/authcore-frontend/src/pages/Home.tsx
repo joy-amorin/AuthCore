@@ -6,6 +6,9 @@ const Home = () => {
 
   if (!user) return <div>Cargando perfil...</div>;
 
+  console.log("User en Home:", user);
+
+
   return (
     <div>
       <h1>Bienvenido, {user.email}</h1>
@@ -22,6 +25,23 @@ const Home = () => {
               <li key={role}>{role}</li>
             ))}
           </ul>
+          <p>Permisos:</p>
+          <ul>
+            {user.permissions.map((perm) => (
+              <li key={perm}>{perm}</li>
+            ))}
+          </ul>
+            <div>
+              {user.permissions.includes("user.view") && (
+                <button>Ver Usuarios</button>
+              )}
+              {user.permissions.includes("user.add") && (
+                <button>Agregar Usuario</button>
+              )}
+              {user.permissions.includes("role.add") && (
+                <button>Agregar Rol</button>
+              )}
+          </div>
         </div>
       )}
 

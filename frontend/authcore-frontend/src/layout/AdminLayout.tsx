@@ -1,4 +1,3 @@
-// src/layout/AdminLayout.tsx
 import { useContext } from "react";
 import type { ReactNode } from "react";
 import { Link, Outlet } from "react-router-dom";
@@ -8,11 +7,10 @@ interface AdminLayoutProps {
   children?: ReactNode;
 }
 
-// Definir menú del panel con roles permitidos
 const menuItems = [
-  { label: "Inicio", path: "home", roles: [] }, // visible para todos
-  { label: "Usuarios", path: "users", roles: ["admin"] },
-  { label: "Roles", path: "roles", roles: ["admin"] },
+  { label: "Inicio", path: "home" },
+  { label: "Usuarios", path: "users", permission: "user.add" },
+  { label: "Roles", path: "roles", permission: "role.view" },
 ];
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {
@@ -27,9 +25,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         <h2>Panel</h2>
         <ul style={{ listStyle: "none", padding: 0 }}>
           {menuItems.map((item) => {
-            if (
-              item.roles.length === 0 ||
-              item.roles.some((role) => user.roles.includes(role))
+            if ( !item.permission || user.permissions.includes(item.permission)
             ) {
               return (
                 <li key={item.path} style={{ margin: "10px 0" }}>
@@ -42,7 +38,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         </ul>
       </aside>
 
-      {/* Contenido principal */}
+      {/* Main content */}
       <main style={{ flex: 1, padding: 20 }}>
         {/* Header */}
         <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
@@ -52,9 +48,8 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           <button onClick={logout}>Logout</button>
         </header>
 
-        {/* Rutas internas */}
+        {/* internal routes */}
         <section>
-          {/* Si usás children, se renderiza aquí */}
           {children ? children : <Outlet />}
         </section>
       </main>

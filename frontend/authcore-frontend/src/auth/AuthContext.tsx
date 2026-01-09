@@ -9,8 +9,8 @@ export interface User {
   last_name: string;
   roles: string[];
   is_superuser: boolean;
+  permissions: string[];
 }
-
 
 export interface AuthContextProps {
   user: User | null;
@@ -23,7 +23,7 @@ export interface AuthContextProps {
 export const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -39,7 +39,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       const profile = await apiFetch("/api/me");
-      setUser(profile);
+      setUser({
+        ...profile,
+        permissions: profile.permissions || [],
+      });
       setAuthenticated(true);
     } catch (err) {
       console.error("Error fetching profile:", err);
