@@ -9,7 +9,7 @@ interface AdminLayoutProps {
 
 const menuItems = [
   { label: "Inicio", path: "home" },
-  { label: "Usuarios", path: "users", permission: "user.add" },
+  { label: "Usuarios", path: "users", permission: "user.view" },
   { label: "Roles", path: "roles", permission: "role.view" },
 ];
 
