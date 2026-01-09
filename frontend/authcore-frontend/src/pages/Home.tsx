@@ -31,17 +31,6 @@ const Home = () => {
               <li key={perm}>{perm}</li>
             ))}
           </ul>
-            <div>
-              {user.permissions.includes("user.view") && (
-                <button>Ver Usuarios</button>
-              )}
-              {user.permissions.includes("user.add") && (
-                <button>Agregar Usuario</button>
-              )}
-              {user.permissions.includes("role.add") && (
-                <button>Agregar Rol</button>
-              )}
-          </div>
         </div>
       )}
 
