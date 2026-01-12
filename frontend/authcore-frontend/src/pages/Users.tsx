@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import type { User } from "../auth/AuthContext";
-import { getUsers } from "../api/get-users";
+import { getUsers } from "../api/getusers";
 import { useNavigate } from "react-router-dom";
 
 const UsersPage = () => {
@@ -57,7 +57,14 @@ const UsersPage = () => {
               <td style={{ border: "1px solid #ccc", padding: "8px" }}>{u.email}</td>
               <td style={{ border: "1px solid #ccc", padding: "8px" }}>{u.first_name}</td>
               <td style={{ border: "1px solid #ccc", padding: "8px" }}>{u.last_name}</td>
-              <td style={{ border: "1px solid #ccc", padding: "8px" }}>{u.roles.join(", ")}</td>
+              <td style={{ border: "1px solid #ccc", padding: "8px" }}>
+                {u.is_superuser
+                  ? "Superuser"
+                  : u.roles && u.roles.length > 0
+                  ? u.roles.join(", ")
+                  : "—"}
+
+                </td>
             </tr>
           ))}
         </tbody>

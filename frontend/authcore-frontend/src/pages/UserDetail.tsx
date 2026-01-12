@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import type { User } from "../auth/AuthContext";
-import { getUserById } from "../api/get-users";
+import { getUserById } from "../api/getusers";
 
 const UserDetail = () => {
   const { user: authUser } = useAuth();
@@ -48,7 +48,11 @@ const UserDetail = () => {
       <p><strong>Email:</strong> {user.email}</p>
       <p><strong>First Name:</strong> {user.first_name}</p>
       <p><strong>Last Name:</strong> {user.last_name}</p>
-      <p><strong>Roles:</strong> {user.roles.join(", ")}</p>
+      <p><strong>Roles:</strong> {user.is_superuser
+                  ? "Superuser"
+                  : user.roles && user.roles.length > 0
+                  ? user.roles.join(", ")
+                  : "—"}</p>
 
       {authUser?.permissions.includes("user.change") && (
         <button onClick={() => navigate(`/users/edit/${user.id}`)}>
