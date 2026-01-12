@@ -35,14 +35,10 @@ class PermissionViewSet(viewsets.ModelViewSet): # create automatically  GET, POS
         instance.delete()
 
 class RoleViewSet(viewsets.ModelViewSet):
-    queryset = Role.objects.all()
+    queryset = Role.objects.prefetch_related('permissions')
     serializer_class = RoleSerializer
     permission_classes = [RolePermission]
 
-    def get_serializer_class(self):
-        if self.action == 'list':
-            return RoleListSerializer
-        return super().get_serializer_class()
     
     def perform_create(self, serializer):
         instance = serializer.save()
