@@ -23,11 +23,19 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
     
 class UserSerializer(serializers.ModelSerializer):
+    roles = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'date_joined']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'date_joined', 'roles']
         read_only_fields = ['id', 'is_staff', 'date_joined']
 
+    def get_roles(self, obj):
+        return list(
+            obj.user_roles
+                .select_related('role')
+                .values_list('role__name', flat=True)
+            )
+        
 class MeSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
