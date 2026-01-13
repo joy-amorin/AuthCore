@@ -27,7 +27,7 @@ class UserPermission(RBACPermission):
         'update': 'user.change',
         'partial_update': 'user.change',
         'destroy': 'user.delete',
-        'roles': 'user.view',
+        'roles': 'assign.role',
       }
 
 class RolePermission(RBACPermission):

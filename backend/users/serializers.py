@@ -26,8 +26,8 @@ class UserSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'date_joined', 'roles']
-        read_only_fields = ['id', 'is_staff', 'date_joined']
+        fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'date_joined', 'roles', 'is_superuser']
+        read_only_fields = ['id', 'is_staff', 'date_joined', 'is_superuser']
 
     def get_roles(self, obj):
         return list(

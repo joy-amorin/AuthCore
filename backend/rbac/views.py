@@ -147,7 +147,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class UserRoleViewset(viewsets.ModelViewSet):
     queryset = UserRole.objects.all()
     serializer_class = UserRoleSerializer
-    Permission_classes = [permissions.IsAdminUser]
+    Permission_classes = [UserPermission]
 
     def create(self, request, *args,**kwargs):
         """
