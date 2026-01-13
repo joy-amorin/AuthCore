@@ -53,31 +53,19 @@ const RolesList = () => {
         <thead>
           <tr>
             <th>Name</th>
-            <th>Permissions</th>
-            {authUser?.permissions.includes("role.change") && <th>Actions</th>}
           </tr>
         </thead>
         <tbody>
           {roles.map((role) => (
             <tr key={role.id}>
               <td>{role.name}</td>
-              <td>{role.permissions?.map(p => p.name).join(", ") || "No permissions"}</td>
-
+              <td>
               {authUser?.permissions.includes("role.change") && (
-                <td>
                   <button onClick={() => navigate(`/panel/roles/${role.id}`)}>
-                    Detail / Edit
+                    Detail
                   </button>
-                  {authUser?.permissions.includes("role.delete") && (
-                    <button
-                      onClick={() => handleDelete(role.id)}
-                      style={{ marginLeft: "0.5rem", color: "red" }}
-                    >
-                      Delete
-                    </button>
                   )}
                 </td>
-              )}
             </tr>
           ))}
         </tbody>
