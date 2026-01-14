@@ -61,5 +61,11 @@ export const apiFetch = async (url: string, options: RequestInit = {}) => {
     throw new Error(`HTTP error! status: ${res.status}, ${text}`);
   }
 
+  // handling empty responses
+  const contentType = res.headers.get("content-type");
+  if (res.status === 204 || !contentType || !contentType.includes("application/json")) {
+    return null;
+  }
+
   return res.json();
 };
