@@ -41,7 +41,7 @@ export const updateUser = async (
 };
 export const deleteUser = async (userId: string) => {
   try {
-    return await apiFetch(`/api/user/${userId}`, {
+    return await apiFetch(`/api/user/${userId}/`, {
       method: "DELETE",
     });
   } catch (err: any) {
