@@ -39,5 +39,15 @@ export const updateUser = async (
     throw new Error(err?.message || "Failed to update user");
   }
 };
-;
+export const deleteUser = async (userId: string) => {
+  try {
+    return await apiFetch(`/api/user/${userId}`, {
+      method: "DELETE",
+    });
+  } catch (err: any) {
+    console.error(`Error deleting user ${userId}:`, err);
+    throw new Error(err?.message || "Failed to delete user");
+  }
+};
+
 
