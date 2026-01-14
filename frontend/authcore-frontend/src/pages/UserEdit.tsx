@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 import type { User } from "../auth/AuthContext";
-import { getUserById, updateUser } from "../api/getusers";
+import { getUserById, updateUser, deleteUser } from "../api/getusers";
 
 const UserEdit = () => {
   const { user: authUser } = useAuth();
@@ -62,6 +62,22 @@ const UserEdit = () => {
     }
   };
 
+  const handleDelete = async () => {
+    if (!user) return;
+    if (!authUser?.permissions.includes("user.delete")) return;
+
+    if (!confirm("Are you sure you want to delete this user?")) return;
+
+    try {
+      await deleteUser(user.id);
+      alert("User deleted successfully.");
+      navigate("/panel/users");
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting user.");
+    }
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
   if (!user) return <div>User not found.</div>;
@@ -94,6 +110,15 @@ const UserEdit = () => {
       <button onClick={handleSave} disabled={saving}>
         {saving ? "Saving..." : "Save Changes"}
       </button>
+
+      {authUser?.permissions.includes("user.delete") && (
+        <button
+          onClick={handleDelete}
+          style={{ marginLeft: "1rem", color: "red" }}
+        >
+          Delete User
+        </button>
+      )}
     </div>
   );
 };
