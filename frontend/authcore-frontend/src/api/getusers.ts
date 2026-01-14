@@ -20,3 +20,24 @@ export const getUserById = async (id: string): Promise<User> => {
     throw err;
   }
 };
+
+export const updateUser = async (
+  userId: string,
+  data: {
+    first_name: string;
+    last_name: string;
+  }
+) => {
+  try {
+    const updatedUser = await apiFetch(`/api/user/${userId}`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    });
+    return updatedUser;
+  } catch (err: any) {
+    console.error(`Error updating user ${userId}:`, err);
+    throw new Error(err?.message || "Failed to update user");
+  }
+};
+;
+

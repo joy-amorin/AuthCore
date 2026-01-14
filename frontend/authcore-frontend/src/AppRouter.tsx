@@ -7,6 +7,7 @@ import UserDetail from "./pages/UserDetail";
 import AdminLayout from "./layout/AdminLayout";
 import RolesList from "./pages/RolesList";
 import RoleDetail from "./pages/RoleDetail";
+import UserEdit from "./pages/UserEdit";
 
 const AppRouter = () => (
   <Router>
@@ -25,6 +26,7 @@ const AppRouter = () => (
         <Route path="users/:id" element={<UserDetail />} />
         <Route path="roles" element={<RolesList />} />
         <Route path="roles/:id" element={<RoleDetail />} />
+        <Route path="users/edit/:id" element={<UserEdit /> } />
       </Route>
     </Routes>
   </Router>

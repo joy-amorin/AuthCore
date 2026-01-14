@@ -60,7 +60,7 @@ const RolesList = () => {
             <tr key={role.id}>
               <td>{role.name}</td>
               <td>
-              {authUser?.permissions.includes("role.change") && (
+              {authUser?.permissions.includes("role.view") && (
                   <button onClick={() => navigate(`/panel/roles/${role.id}`)}>
                     Detail
                   </button>

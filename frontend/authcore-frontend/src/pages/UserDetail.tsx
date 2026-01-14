@@ -55,7 +55,7 @@ const UserDetail = () => {
                   : "—"}</p>
 
       {authUser?.permissions.includes("user.change") && (
-        <button onClick={() => navigate(`/users/edit/${user.id}`)}>
+        <button onClick={() => navigate(`/panel/users/edit/${user.id}`)}>
           Edit User
         </button>
       )}
