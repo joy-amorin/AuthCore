@@ -94,7 +94,7 @@ class RoleViewSet(viewsets.ModelViewSet):
     #-------------------------------
     # Delete permissions from role
     #-------------------------------
-    @action(detail=True, methods=['POST'],
+    @action(detail=True, methods=['POST'], #Swagger does not handle the body for delete well for this reason I used POST -_-
         url_path='permissions/delete',
         serializer_class=AssignPermissionsSerializer
         )
@@ -168,12 +168,30 @@ class UserRoleViewset(viewsets.ModelViewSet):
         else:
             return Response({ "detail": "La asignación ya existe"}, status=status.HTTP_200_OK)
         
-    def destroy(self, request, *args, **kwargs):
+    @action(detail=False, methods=['POST'], url_path='remove_role')  #Swagger does not handle the body for delete well for this reason I used POST -_-
+    def remove_role(self, request):
         """
-        DELETE /user-role/{id}
-        remove a role assignment from a user
+        Remove a role from a user using user_id and role_id
+        POST /user_role/remove-role
+        Body: { "user": "<user_id>", "role": "<role_id>" }
         """
 
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response({"detail": "Rol removido correctamente"}, status=status.HTTP_200_OK)
+        user_id = request.data.get("user")
+        role_id = request.data.get("role")
+
+        if not user_id or not role_id:
+            return Response(
+                {"detail": "Se deben enviar user y role"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        try:
+            user_role = UserRole.objects.get(user__id=user_id, role__id=role_id)
+        except UserRole.DoesNotExist:
+            return Response({
+                "detail": "No existe la asignación de rol para este usuario"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        user_role.delete()
+        return Response({
+            "detail": "Rol removido correctamente"},
+            status=status.HTTP_200_OK)
