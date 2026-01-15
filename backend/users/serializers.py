@@ -33,9 +33,8 @@ class UserSerializer(serializers.ModelSerializer):
         return list(
             obj.user_roles
                 .select_related('role')
-                .values_list('role__name', flat=True)
+                .values('role__id', 'role__name')
             )
-        
 class MeSerializer(serializers.ModelSerializer):
     roles = serializers.SerializerMethodField()
     permissions = serializers.SerializerMethodField()
