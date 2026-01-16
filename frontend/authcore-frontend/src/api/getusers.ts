@@ -1,6 +1,15 @@
 import { apiFetch } from "./client";
 import type { User } from "../auth/AuthContext";
 
+export interface UserRole {
+  role__id: string;
+  role__name: string;
+}
+
+export interface ApiUser extends Omit<User, "roles"> {
+  roles: UserRole[];
+}
+
 export const getUsers = async (): Promise<User[]> => {
   try {
     const users: User[] = await apiFetch("/api/user");
@@ -11,10 +20,20 @@ export const getUsers = async (): Promise<User[]> => {
   }
 };
 
-export const getUserById = async (id: string): Promise<User> => {
+export const getUserById = async (id: string): Promise<ApiUser> => {
   try {
-    const user: User = await apiFetch(`/api/user/${id}`);
-    return user;
+    const data: User = await apiFetch(`/api/user/${id}`);
+
+    // convert roles to the format { role__id, role__name }
+    const formattedRoles: UserRole[] = Array.isArray(data.roles)
+      ? data.roles.map((r) =>
+          typeof r === "string"
+            ? { role__id: r, role__name: r }
+            : r
+        )
+      : [];
+
+    return { ...data, roles: formattedRoles };
   } catch (err) {
     console.error("Error fetching user:", err);
     throw err;
@@ -29,7 +48,7 @@ export const updateUser = async (
   }
 ) => {
   try {
-    const updatedUser = await apiFetch(`/api/user/${userId}`, {
+    const updatedUser = await apiFetch(`/api/user/${userId}/`, {
       method: "PATCH",
       body: JSON.stringify(data),
     });

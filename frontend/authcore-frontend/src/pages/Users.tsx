@@ -4,16 +4,25 @@ import type { User } from "../auth/AuthContext";
 import { getUsers } from "../api/getusers";
 import { useNavigate } from "react-router-dom";
 
+interface UserRole {
+  role__id: string;
+  role__name: string;
+}
+
+interface ApiUser extends Omit<User, "roles"> {
+  roles: UserRole[];
+}
+
 const UsersPage = () => {
-  const { user } = useAuth();
+  const { user: authUser } = useAuth();
   const navigate = useNavigate(); 
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<ApiUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchUsers = async () => {
-      if (!user?.permissions.includes("user.view")) {
+      if (!authUser?.permissions.includes("user.view")) {
         setError("You do not have permission to view users.");
         setLoading(false);
         return;
@@ -22,7 +31,14 @@ const UsersPage = () => {
       try {
         setLoading(true);
         const usersData = await getUsers();
-        setUsers(usersData);
+        const formattedUsers: ApiUser[] = usersData.map((u: any) => ({
+          ...u,
+          roles: Array.isArray(u.roles)
+            ? u.roles.filter((r: any): r is UserRole => r && typeof r === "object")
+            : [],
+        }));
+        console.log("Formatted users with roles:", formattedUsers);
+        setUsers(formattedUsers);
       } catch (err) {
         console.error(err);
         setError("Error fetching users.");
@@ -32,7 +48,7 @@ const UsersPage = () => {
     };
 
     fetchUsers();
-  }, [user]);
+  }, [authUser]);
 
   if (loading) return <div>Loading users...</div>;
   if (error) return <div>{error}</div>;
@@ -51,20 +67,21 @@ const UsersPage = () => {
         </thead>
         <tbody>
           {users.map((u) => (
-            <tr key={u.id}
-            style={{ cursor: "pointer"}}
-            onClick={() => navigate(`/panel/users/${u.id}`)}>
+            <tr
+              key={u.id}
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate(`/panel/users/${u.id}`)}
+            >
               <td style={{ border: "1px solid #ccc", padding: "8px" }}>{u.email}</td>
               <td style={{ border: "1px solid #ccc", padding: "8px" }}>{u.first_name}</td>
               <td style={{ border: "1px solid #ccc", padding: "8px" }}>{u.last_name}</td>
               <td style={{ border: "1px solid #ccc", padding: "8px" }}>
                 {u.is_superuser
                   ? "Superuser"
-                  : u.roles && u.roles.length > 0
-                  ? u.roles.join(", ")
+                  : u.roles.length > 0
+                  ? u.roles.map((r) => r.role__name).join(", ")
                   : "—"}
-
-                </td>
+              </td>
             </tr>
           ))}
         </tbody>

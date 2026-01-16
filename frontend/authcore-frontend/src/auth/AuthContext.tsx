@@ -1,13 +1,14 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { apiFetch } from "../api/client";
+import type { UserRole } from "../api/getusers";
 
 export interface User {
   id: string;
   email: string;
   first_name: string;
   last_name: string;
-  roles: string[];
+  roles: UserRole[];
   is_superuser: boolean;
   permissions: string[];
 }
