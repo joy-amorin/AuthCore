@@ -8,11 +8,14 @@ import AdminLayout from "./layout/AdminLayout";
 import RolesList from "./pages/RolesList";
 import RoleDetail from "./pages/RoleDetail";
 import UserEdit from "./pages/UserEdit";
+import RegisterPage from "./pages/RegisterPage";
 
 const AppRouter = () => (
   <Router>
     <Routes>
+      {/* public routes */}
       <Route path="/" element={<Login />} />
+      {/* private routes within the panel */}
       <Route
         path="/panel/*"
         element={
@@ -24,9 +27,19 @@ const AppRouter = () => (
         <Route path="home" element={<Home />} />
         <Route path="users" element={<UsersPage />} />
         <Route path="users/:id" element={<UserDetail />} />
+        <Route path="users/edit/:id" element={<UserEdit />} />
         <Route path="roles" element={<RolesList />} />
         <Route path="roles/:id" element={<RoleDetail />} />
-        <Route path="users/edit/:id" element={<UserEdit /> } />
+
+        {/* route for user registration */}
+        <Route
+          path="register"
+          element={
+            <PrivateRoute>
+              <RegisterPage />
+            </PrivateRoute>
+          }
+        />
       </Route>
     </Routes>
   </Router>

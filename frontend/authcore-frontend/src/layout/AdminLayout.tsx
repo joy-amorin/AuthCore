@@ -6,10 +6,10 @@ import { AuthContext } from "../auth/AuthContext";
 interface AdminLayoutProps {
   children?: ReactNode;
 }
-
 const menuItems = [
   { label: "Inicio", path: "home" },
   { label: "Usuarios", path: "users", permission: "user.view" },
+  { label: "Alta de Usuarios", path: "register", permission: "user.add" },
   { label: "Roles", path: "roles", permission: "role.view" },
 ];
 
@@ -25,8 +25,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
         <h2>Panel</h2>
         <ul style={{ listStyle: "none", padding: 0 }}>
           {menuItems.map((item) => {
-            if ( !item.permission || user.permissions.includes(item.permission)
-            ) {
+            if (!item.permission || user.permissions.includes(item.permission)) {
               return (
                 <li key={item.path} style={{ margin: "10px 0" }}>
                   <Link to={`/panel/${item.path}`}>{item.label}</Link>
@@ -48,7 +47,7 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           <button onClick={logout}>Logout</button>
         </header>
 
-        {/* internal routes */}
+        {/* Internal routes */}
         <section>
           {children ? children : <Outlet />}
         </section>
