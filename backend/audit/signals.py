@@ -13,8 +13,8 @@ def log_user_role_save(sender, instance, created, **kwargs):
         object_id=str(instance.id),
         action=action,
         changes={
-            'user': str(instance.user.id),
-            'role': str(instance.role.id)
+            'user': str(instance.user.email),
+            'role': str(instance.role.name)
         }
     )
 
@@ -26,15 +26,15 @@ def log_user_role_delete(sender, instance, **kwargs):
         object_id=str(instance.id),
         action='delete',
         changes={
-            'user': str(instance.user.id),
-            'role': str(instance.role.id)
+            'user': str(instance.user.email),
+            'role': str(instance.role.name)
         }
     )
 @receiver(post_save, sender=User)
 def log_user_save(sender, instance, created, **kwargs):
     action = 'create' if created else 'update'
     AuditLog.objects.create(
-        user=getattr(instance, '_current_user, None'),
+        user=getattr(instance, '_current_user', None),
         model_name='User',
         object_id=str(instance.id),
         action=action,
@@ -42,11 +42,11 @@ def log_user_save(sender, instance, created, **kwargs):
     )
 
 @receiver(post_delete, sender=User)
-def log_user_delete(sender, instance, *kwargs):
+def log_user_delete(sender, instance, **kwargs):
     AuditLog.objects.create(
         user=getattr(instance, '_current_user', None), 
         model_name='User', 
         object_id=str(instance.id),
         action='delete',
-        change={}
+        changes={}
     )

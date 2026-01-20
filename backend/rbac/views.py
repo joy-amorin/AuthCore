@@ -12,6 +12,7 @@ from users.models import User
 from users.serializers import UserSerializer
 from .models import UserRole
 from .permissions import UserPermission, RolePermission, PermissionPermission
+from audit.models import AuditLog
 
 
 
@@ -20,39 +21,11 @@ class PermissionViewSet(viewsets.ModelViewSet): # create automatically  GET, POS
     serializer_class = PermissionSerializer
     permission_classes = [PermissionPermission]
 
-    def perform_create(self, serializer):
-        instance = serializer.save()
-        instance._current_user = self.request.user
-        instance.save()
-    
-    def perform_update(self, serializer):
-        instance = serializer.save()
-        instance._current_user = self.request.user
-        instance.save()
-
-    def perform_destroy(self, instance):
-        instance._current_user = self.request.user
-        instance.delete()
 
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.prefetch_related('permissions')
     serializer_class = RoleSerializer
     permission_classes = [RolePermission]
-
-    
-    def perform_create(self, serializer):
-        instance = serializer.save()
-        instance._current_user = self.request.user
-        instance.save()
-
-    def perform_update(self, serializer):
-        instance = serializer.save()
-        instance._current_user = self.request.user
-        instance.save()
-
-    def perform_destroy(self, instance):
-        instance._current_user = self.request.user
-        instance.delete()
 
     #-------------------------------
     # Assign permissions to role
@@ -133,6 +106,18 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [UserPermission]
 
+    def perform_create(self, serializer):
+        serializer.save(_current_user=self.request.user)
+
+    def perform_update(self, serializer):
+        serializer.save(_current_user=self.request.user)
+
+    
+    def perform_destroy(self, instance):      
+        instance._current_user = self.request.user
+        instance.delete()
+
+
     @action(detail=True, methods=['GET'], url_path='roles')
     def roles(self, request, pk=None):
         """
@@ -149,6 +134,18 @@ class UserRoleViewset(viewsets.ModelViewSet):
     serializer_class = UserRoleSerializer
     Permission_classes = [UserPermission]
 
+    def perform_create(self, serializer):
+        serializer.save(_current_user=self.request.user)
+
+    def perform_update(self, serializer):   
+        serializer.save(_current_user=self.request.user)     
+    
+    def perform_destroy(self, instance):
+        
+        instance._current_user = self.request.user
+        instance.delete()
+
+
     def create(self, request, *args,**kwargs):
         """
         POST /user-roles
@@ -162,6 +159,9 @@ class UserRoleViewset(viewsets.ModelViewSet):
 
         # avoid duplicates
         user_role, created = UserRole.objects.get_or_create(user=user, role=role)
+        user_role._current_user = request.user
+        user_role.save()
+
 
         if created:
             return Response({ "detail": "Rol asignado correctamente"}, status=status.HTTP_201_CREATED)
@@ -191,6 +191,7 @@ class UserRoleViewset(viewsets.ModelViewSet):
                 "detail": "No existe la asignación de rol para este usuario"},
                 status=status.HTTP_404_NOT_FOUND
             )
+        user_role._current_user = request.user
         user_role.delete()
         return Response({
             "detail": "Rol removido correctamente"},

@@ -31,7 +31,25 @@ class UserRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserRole
         fields = ['id', 'user', 'role']
+
+    def create(self, validated_data):
+        _current_user = validated_data.pop('_current_user', None)
+        instance = UserRole(**validated_data)
+        if _current_user:
+            instance._current_user = _current_user
+        instance.save() # fire post save
+        return instance
     
+    def update(self, instance, validated_data):
+        _current_user = validated_data.pop('_current_user', None)
+        for attr, value in validated_data.items():
+                setattr(instance, attr, value)
+
+        instance._current_user = _current_user
+        instance.save()
+
+        return instance
+
 class RolePermissionSerializer(serializers.ModelSerializer):
     class Meta:
         model = RolePermission
