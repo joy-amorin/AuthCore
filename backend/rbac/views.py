@@ -137,7 +137,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
         instance._changes = {
             "id": str(instance.id),
-            "repr": str(instance),
+            "email": str(instance),
         }
         instance.delete()
 
