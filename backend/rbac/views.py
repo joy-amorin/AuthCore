@@ -110,11 +110,35 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer.save(_current_user=self.request.user)
 
     def perform_update(self, serializer):
-        serializer.save(_current_user=self.request.user)
+        instance = self.get_object()
+        before = {
+            field: getattr(instance, field)
+            for field in serializer.validated_data.keys()
+        }
+
+        for field, value in serializer.validated_data.items():
+            setattr(instance, field, value)
+
+
+        instance._current_user = self.request.user
+        instance._changes = {
+            field: {
+                "from": before[field],
+                "to": getattr(instance, field)
+            }
+            for field in before
+            if before[field] != getattr(instance,field)
+        }
+        instance.save()
 
     
     def perform_destroy(self, instance):      
         instance._current_user = self.request.user
+
+        instance._changes = {
+            "id": str(instance.id),
+            "repr": str(instance),
+        }
         instance.delete()
 
 

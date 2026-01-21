@@ -38,7 +38,7 @@ def log_user_save(sender, instance, created, **kwargs):
         model_name='User',
         object_id=str(instance.id),
         action=action,
-        changes={}
+        changes=getattr(instance, "_changes", {})
     )
 
 @receiver(post_delete, sender=User)
@@ -48,5 +48,5 @@ def log_user_delete(sender, instance, **kwargs):
         model_name='User', 
         object_id=str(instance.id),
         action='delete',
-        changes={}
+        changes=getattr(instance,"_changes", {})
     )
