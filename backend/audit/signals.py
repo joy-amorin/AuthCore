@@ -20,16 +20,17 @@ def log_user_role_save(sender, instance, created, **kwargs):
 
 @receiver(post_delete, sender=UserRole)
 def log_user_role_delete(sender, instance, **kwargs):
-    AuditLog.objects.create(
-        user=getattr(instance, '_current_user', None),
-        model_name='UserRole',
-        object_id=str(instance.id),
-        action='delete',
-        changes={
-            'user': str(instance.user.email),
-            'role': str(instance.role.name)
-        }
-    )
+    if getattr(instance, '_current_user', None):
+        AuditLog.objects.create(
+            user = instance._current_user,
+            model_name='UserRole',
+            object_id=str(instance.id),
+            action='delete',
+            changes={
+                'user': str(instance.user.email),
+                'role': str(instance.role.name)
+            }
+        )
 @receiver(post_save, sender=User)
 def log_user_save(sender, instance, created, **kwargs):
     action = 'create' if created else 'update'

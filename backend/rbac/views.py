@@ -181,13 +181,12 @@ class UserRoleViewset(viewsets.ModelViewSet):
         user = get_object_or_404(User, id=serializer.validated_data['user'].id)
         role = get_object_or_404(Role, id=serializer.validated_data['role'].id)
 
-        # avoid duplicates
-        user_role, created = UserRole.objects.get_or_create(user=user, role=role)
-        user_role._current_user = request.user
-        user_role.save()
+        user_role = UserRole.objects.filter(user=user, role=role).first()
 
-
-        if created:
+        if not user_role:
+            user_role = UserRole(user=user, role=role)
+            user_role._current_user = request.user
+            user_role.save()
             return Response({ "detail": "Rol asignado correctamente"}, status=status.HTTP_201_CREATED)
         else:
             return Response({ "detail": "La asignación ya existe"}, status=status.HTTP_200_OK)
