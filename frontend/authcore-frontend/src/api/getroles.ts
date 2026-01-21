@@ -44,3 +44,15 @@ export const deleteRoleById = async (id: string) => {
     throw err;
   }
 };
+export const removeRoleFromUser = async (userId: string, roleId: string) => {
+  try {
+    await apiFetch("/api/user_role/remove_role/", {
+      method: "POST",
+      body: JSON.stringify({ user: userId, role: roleId }),
+    });
+    return true;
+  } catch (err) {
+    console.error(`Error removing role ${roleId} from user ${userId}:`, err);
+    throw err;
+  }
+};

@@ -9,6 +9,7 @@ import RolesList from "./pages/RolesList";
 import RoleDetail from "./pages/RoleDetail";
 import UserEdit from "./pages/UserEdit";
 import RegisterPage from "./pages/RegisterPage";
+import AuditLogList from "./pages/AuditLogList";
 
 const AppRouter = () => (
   <Router>
@@ -30,6 +31,7 @@ const AppRouter = () => (
         <Route path="users/edit/:id" element={<UserEdit />} />
         <Route path="roles" element={<RolesList />} />
         <Route path="roles/:id" element={<RoleDetail />} />
+        <Route path="audit" element={< AuditLogList />} />
 
         {/* route for user registration */}
         <Route
