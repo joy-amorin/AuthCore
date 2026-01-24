@@ -101,7 +101,7 @@ const UserEdit = () => {
     }
   };
 
-  // ---------- Eliminar usuario --------------------
+  // ---------- delete user --------------------
   const handleDelete = () => {
     if (!user) return;
     if (!authUser?.permissions.includes("user.delete")) return;
@@ -125,7 +125,7 @@ const UserEdit = () => {
       setShowConfirm(false);
     }
   };
-  // -------------Asignar un rol --------------------------
+  // -------------Assign a role --------------------------
 
   const handleAssignRole = async () => {
     if (!user || !selectedRole) return;
@@ -154,28 +154,39 @@ const UserEdit = () => {
       setRoleSaving(false);
     }
   };
-  // -------------Remover un rol --------------------------
-  const handleRemoveRole = (roleId: string) => {
-    if (!user) return;
-    if (!canDeleteRole) return;
 
-    setConfirmMessage("¿Estás seguro de que deseas remover este rol del usuario?");
-    setConfirmAction(async () => {
-      try {
-        setRoleSaving(true);
-        await removeRoleFromUser(user.id, roleId);
-        addToast("Rol removido correctamente.", "success");
-        setUserRoles((prev) => prev.filter((r) => r.id !== roleId));
-        if (selectedRole === roleId) setSelectedRole(null);
-      } catch (err) {
-        console.error(err);
-        addToast("Error al eliminar rol.", "error");
-      } finally {
-        setRoleSaving(false);
-      }
-    });
-    setShowConfirm(true);
-  };
+   // -------------Remove rol for user --------------------------
+
+  const handleRemoveRole = (roleId: string) => {
+  if (!user) return;
+  if (!canDeleteRole) return;
+
+ 
+  setConfirmMessage("¿Estás seguro de que deseas remover este rol del usuario?");
+
+  //  Save the action that will be executed when the user confirms
+   setConfirmAction(() => () => handleRemoveRoleConfirmed(roleId));
+
+   setShowConfirm(true)  
+};
+
+// Function for role deletion
+const handleRemoveRoleConfirmed = async (roleId: string) => {
+  try {
+    setRoleSaving(true);
+    if(!user) return;
+    await removeRoleFromUser(user.id, roleId);
+    addToast("Rol removido correctamente.", "success");
+    setUserRoles((prev) => prev.filter((r) => r.id !== roleId));
+    if (selectedRole === roleId) setSelectedRole(null);
+  } catch (err) {
+    console.error(err);
+    addToast("Error al eliminar rol.", "error");
+  } finally {
+    setRoleSaving(false);
+  }
+};
+
 
   if (loading) {
     return (
@@ -416,7 +427,7 @@ const UserEdit = () => {
           open={showConfirm} 
           message={confirmMessage}
           onConfirm={() => {
-            confirmAction();
+            if (confirmAction) confirmAction();
             setShowConfirm(false);
           }}
           onCancel={() => setShowConfirm(false)}
