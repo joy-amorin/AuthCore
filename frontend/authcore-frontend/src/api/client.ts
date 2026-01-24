@@ -52,6 +52,8 @@ export const apiFetch = async (url: string, options: RequestInit = {}) => {
       // Refresh failed, clear tokens
       localStorage.removeItem("access_token");
       localStorage.removeItem("refresh_token");
+
+      window.dispatchEvent(new Event("auth:logout"));
       throw err;
     }
   }

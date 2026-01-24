@@ -19,11 +19,19 @@ import {
   AlertCircle, 
   Loader2 
 } from "lucide-react";
+import { useToast } from "../contexts/ToastContexts";
+import ConfirmModal from "../contexts/ConfirmModal";
 
 const UserEdit = () => {
   const { user: authUser } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+
+  const { addToast } = useToast();
+  
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmMessage, setConfirmMessage] = useState("");
+  const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null);
 
   const [user, setUser] = useState<User | null>(null);
   const [firstName, setFirstName] = useState("");
@@ -87,27 +95,37 @@ const UserEdit = () => {
       navigate(`/panel/users/${user.id}`);
     } catch (err) {
       console.error(err);
-      alert("Error updating user.");
+      addToast("Error updating user.", "error");
     } finally {
       setSaving(false);
     }
   };
 
-  const handleDelete = async () => {
+  // ---------- Eliminar usuario --------------------
+  const handleDelete = () => {
     if (!user) return;
     if (!authUser?.permissions.includes("user.delete")) return;
 
-    if (!confirm("Are you sure you want to delete this user?")) return;
+    setConfirmMessage("¿Estás seguro de que deseas eliminar este usuario?");
+    setConfirmAction(() => handleDeleteConfirmed);
+    setShowConfirm(true);
+  };
+
+  const handleDeleteConfirmed = async () => {
+    if (!user) return;
 
     try {
       await deleteUser(user.id);
-      alert("User deleted successfully.");
+      addToast("Usuario eliminado correctamente.", "success");
       navigate("/panel/users");
     } catch (err) {
       console.error(err);
-      alert("Error deleting user.");
+      addToast("Error al eliminar usuario.", "error");
+    } finally {
+      setShowConfirm(false);
     }
   };
+  // -------------Asignar un rol --------------------------
 
   const handleAssignRole = async () => {
     if (!user || !selectedRole) return;
@@ -124,37 +142,39 @@ const UserEdit = () => {
         body: JSON.stringify({ user: user.id, role: selectedRole }),
       });
 
-      alert("Role assigned successfully.");
+      addToast("Rol asignado correctamente", "success");
       const assignedRole = roles.find((r) => r.id === selectedRole);
       if (assignedRole) {
         setUserRoles((prev) => [...prev, { id: assignedRole.id, name: assignedRole.name }]);
       }
     } catch (err) {
       console.error(err);
-      alert("Error assigning role.");
+      addToast("Error al asignar rol.", "error");
     } finally {
       setRoleSaving(false);
     }
   };
-
-  const handleRemoveRole = async (roleId: string) => {
+  // -------------Remover un rol --------------------------
+  const handleRemoveRole = (roleId: string) => {
     if (!user) return;
     if (!canDeleteRole) return;
 
-    if (!confirm("Are you sure you want to remove this role from the user?")) return;
-
-    try {
-      setRoleSaving(true);
-      await removeRoleFromUser(user.id, roleId);
-      alert("Role removed successfully.");
-      setUserRoles((prev) => prev.filter((r) => r.id !== roleId));
-      if (selectedRole === roleId) setSelectedRole(null);
-    } catch (err) {
-      console.error(err);
-      alert("Error removing role.");
-    } finally {
-      setRoleSaving(false);
-    }
+    setConfirmMessage("¿Estás seguro de que deseas remover este rol del usuario?");
+    setConfirmAction(async () => {
+      try {
+        setRoleSaving(true);
+        await removeRoleFromUser(user.id, roleId);
+        addToast("Rol removido correctamente.", "success");
+        setUserRoles((prev) => prev.filter((r) => r.id !== roleId));
+        if (selectedRole === roleId) setSelectedRole(null);
+      } catch (err) {
+        console.error(err);
+        addToast("Error al eliminar rol.", "error");
+      } finally {
+        setRoleSaving(false);
+      }
+    });
+    setShowConfirm(true);
   };
 
   if (loading) {
@@ -388,6 +408,19 @@ const UserEdit = () => {
             </button>
           </div>
         </div>
+      )}
+
+      {/* Confirm Modal */}
+      {showConfirm && confirmAction && (
+        <ConfirmModal
+          open={showConfirm} 
+          message={confirmMessage}
+          onConfirm={() => {
+            confirmAction();
+            setShowConfirm(false);
+          }}
+          onCancel={() => setShowConfirm(false)}
+        />
       )}
     </div>
   );

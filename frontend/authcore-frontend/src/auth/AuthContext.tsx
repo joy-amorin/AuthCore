@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import { apiFetch } from "../api/client";
 import type { UserRole } from "../api/getusers";
+import { useToast } from "../contexts/ToastContexts";
+
 
 export interface User {
   id: string;
@@ -27,6 +29,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const{ addToast } = useToast();
 
   const checkAuth = async () => {
     setLoading(true);
@@ -54,8 +58,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  // Verificar sesión al cargar la app
   useEffect(() => {
     checkAuth();
+  }, []);
+
+  // Escuchar logout forzado (token expirado) y redirige a login
+  useEffect(() => {
+    const handleLogout = () => {
+      logout();
+      addToast("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.", "info");
+      window.location.href = "/"; // redirige automáticamente
+    };
+
+    window.addEventListener("auth:logout", handleLogout);
+
+    return () => {
+      window.removeEventListener("auth:logout", handleLogout);
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
