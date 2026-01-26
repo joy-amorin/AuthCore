@@ -53,14 +53,12 @@ class MeSerializer(serializers.ModelSerializer):
     def get_permissions(self, obj):
 
         if obj.is_superuser:
-            return list(
-                Permission.objects.values_list('name', flat=True)
-            )
-        roles = Role.objects.filter(role_assignments__user=obj
-                                    ).prefetch_related('permissions')
-        permission = set()
-        for role in roles:
-            for perm in role.permissions.all():
-                permission.add(perm.name)
-        return list(permission)
-        
+           perms = Permission.objects.all()
+        else:
+            roles = Role.objects.filter(role_assignments__user=obj).prefetch_related('permissions')
+            perms_set = set()
+            for role in roles:
+                for perm in role.permissions.all():
+                    perms_set.add(perm)
+            perms = list(perms_set)
+        return [{'name': p.name, 'description': p.description} for p in perms]
