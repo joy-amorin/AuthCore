@@ -4,6 +4,11 @@ import { apiFetch } from "../api/client";
 import type { UserRole } from "../api/getusers";
 import { useToast } from "../contexts/ToastContexts";
 
+export interface UserPermission {
+  name: string;
+  description: string
+}
+
 
 export interface User {
   id: string;
@@ -12,7 +17,7 @@ export interface User {
   last_name: string;
   roles: UserRole[];
   is_superuser: boolean;
-  permissions: string[];
+  permissions: UserPermission[];
 }
 
 export interface AuthContextProps {
@@ -44,10 +49,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     try {
       const profile = await apiFetch("/api/me");
-      setUser({
-        ...profile,
-        permissions: profile.permissions || [],
-      });
+
+const formattedRoles = (profile.roles || []).map((r: string | UserRole, index: number) => ({
+  role__id: typeof r === "string" ? `role-${index}` : r.role__id,
+  role__name: typeof r === "string" ? r : r.role__name,
+}));
+;
+
+setUser({
+  ...profile,
+  roles: formattedRoles,
+  permissions: profile.permissions || [],
+});
+
       setAuthenticated(true);
     } catch (err) {
       console.error("Error fetching profile:", err);
