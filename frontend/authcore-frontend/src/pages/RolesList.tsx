@@ -30,7 +30,7 @@ const RolesList = () => {
   }, []);
 
   const handleDelete = async (roleId: string) => {
-    if (!authUser?.permissions.includes("role.delete")) return;
+   if (!authUser?.permissions.some(p => p.name === "role.delete")) return;
 
     if (!confirm("Are you sure you want to delete this role?")) return;
 
@@ -111,7 +111,7 @@ const RolesList = () => {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
-                      {authUser?.permissions.includes("role.view") && (
+                     {authUser?.permissions.some(p => p.name === "role.view") && (
                         <button
                           onClick={() => navigate(`/panel/roles/${role.id}`)}
                           className="flex items-center gap-2 border border-green-400/50 bg-green-400/10 hover:bg-green-400/20 text-green-400 px-3 py-1.5 transition-colors font-mono text-xs tracking-wide"
@@ -121,7 +121,7 @@ const RolesList = () => {
                         </button>
                       )}
 
-                      {authUser?.permissions.includes("role.delete") && (
+                      {authUser?.permissions.some(p => p.name === "role.delete") && (
                         <button
                           onClick={() => handleDelete(role.id)}
                           className="flex items-center gap-2 border border-red-500/50 bg-red-950/30 hover:bg-red-900/50 text-red-400 px-3 py-1.5 transition-colors font-mono text-xs tracking-wide"

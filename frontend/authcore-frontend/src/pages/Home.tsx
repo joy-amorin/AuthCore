@@ -61,16 +61,18 @@ const Home = () => {
                 <p className="text-lg tracking-wider m-0">TUS ROLES:</p>
               </div>
               <ul className="list-none p-0 m-0 grid grid-cols-1 gap-2">
-                {user.roles.map((role) => (
+                {user.roles.map((role, index) => (
                   <li
-                    key={role}
+                    key={role.role__id || role.role__name || index}
                     className="flex items-center gap-2 bg-slate-800/50 border border-green-400/20 p-3"
                   >
                     <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                    <span className="text-sm tracking-wide">{role}</span>
+                    <span className="text-sm tracking-wide">{role.role__name || "Sin nombre"}</span>
                   </li>
                 ))}
+
               </ul>
+
             </div>
 
             {/* Permissions Section */}
@@ -82,11 +84,11 @@ const Home = () => {
               <ul className="list-none p-0 m-0 grid grid-cols-1 md:grid-cols-2 gap-2">
                 {user.permissions.map((perm) => (
                   <li
-                    key={perm}
+                    key={perm.name}
                     className="flex items-start gap-2 bg-slate-800/50 border border-green-400/20 p-2"
                   >
                     <span className="text-green-400/50 text-xs mt-0.5">►</span>
-                    <span className="text-xs tracking-wide">{perm}</span>
+                    <span className="text-xs tracking-wide">{perm.description}</span>
                   </li>
                 ))}
               </ul>

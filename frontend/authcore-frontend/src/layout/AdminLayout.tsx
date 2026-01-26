@@ -69,7 +69,8 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
           <nav>
             <ul className="space-y-2">
               {menuItems.map((item) => {
-                if (!item.permission || user.permissions.includes(item.permission)) {
+               if (!item.permission || user.permissions.some((perm) => perm.name === item.permission)) {
+
                   const isActive = location.pathname === `/panel/${item.path}`;
                   const Icon = item.icon;
                   

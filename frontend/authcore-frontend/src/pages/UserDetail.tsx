@@ -33,7 +33,7 @@ const UserDetail = () => {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (!authUser?.permissions.includes("user.view")) {
+      if (!authUser?.permissions.some(p => p.name === "user.view")) {
         setError("You do not have permission to view this user.");
         setLoading(false);
         return;
@@ -122,7 +122,7 @@ const UserDetail = () => {
             </div>
           </div>
 
-          {authUser?.permissions.includes("user.change") && (
+          {authUser?.permissions.some(p => p.name === "user.change") && (
             <button
               onClick={() => navigate(`/panel/users/edit/${user.id}`)}
               className="flex items-center gap-2 border border-green-400/50 bg-green-400/10 hover:bg-green-400/20 text-green-400 px-4 py-2 transition-colors font-mono text-sm"

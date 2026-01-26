@@ -23,7 +23,7 @@ const UsersPage = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      if (!authUser?.permissions.includes("user.view")) {
+      if (!authUser?.permissions.some(p => p.name === "user.view")) {
         setError("You do not have permission to view users.");
         setLoading(false);
         return;

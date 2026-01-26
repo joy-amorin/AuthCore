@@ -45,7 +45,7 @@ const UserEdit = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!authUser?.permissions.includes("user.change")) {
+    if (!authUser?.permissions.some(p => p.name === "user.change")) {
       setError("You do not have permission to edit users.");
       setLoading(false);
       return;
@@ -83,7 +83,7 @@ const UserEdit = () => {
   }, [authUser, id]);
 
   const canDeleteRole = authUser?.permissions.some((p) =>
-    p.toLowerCase().includes("user_role.delete")
+    p.name.toLowerCase().includes("user_role.delete")
   );
 
   const handleSave = async () => {
@@ -104,7 +104,7 @@ const UserEdit = () => {
   // ---------- delete user --------------------
   const handleDelete = () => {
     if (!user) return;
-    if (!authUser?.permissions.includes("user.delete")) return;
+    if (!authUser?.permissions.some(p => p.name === "user.delete")) return;
 
     setConfirmMessage("¿Estás seguro de que deseas eliminar este usuario?");
     setConfirmAction(() => handleDeleteConfirmed);
@@ -129,7 +129,7 @@ const UserEdit = () => {
 
   const handleAssignRole = async () => {
     if (!user || !selectedRole) return;
-    if (!authUser?.permissions.includes("assign.role")) return;
+    if (!authUser?.permissions.some(p => p.name === "assign.role")) return;
 
     try {
       setRoleSaving(true);
@@ -317,7 +317,7 @@ const handleRemoveRoleConfirmed = async (roleId: string) => {
             )}
           </button>
 
-          {authUser?.permissions.includes("user.delete") && (
+          {authUser?.permissions.some(p => p.name === "user.delete") && (
             <button
               onClick={handleDelete}
               className="flex items-center gap-2 border-2 border-red-500/50 bg-red-950/30 hover:bg-red-900/50 text-red-400 font-mono px-6 py-3 transition-colors"
@@ -377,7 +377,7 @@ const handleRemoveRoleConfirmed = async (roleId: string) => {
       </div>
 
       {/* Assign Role */}
-      {authUser?.permissions.includes("assign.role") && (
+      {authUser?.permissions.some(p => p.name === "assign.role") && (
         <div className="border-2 border-green-400/30 bg-slate-900/50 p-6">
           <div className="flex items-center gap-2 mb-4 pb-2 border-b border-green-400/20">
             <Plus className="w-5 h-5 text-green-400" />
